@@ -1,4 +1,6 @@
-create table `user_system`.`users` (
+use user_system;
+
+create table `users` (
   id int auto_increment PRIMARY KEY,
   username varchar(255),
   email varchar(255) UNIQUE KEY,

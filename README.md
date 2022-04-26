@@ -1,4 +1,4 @@
-# Login with 2FA
+# Login with 2FA Using NodeJS
 
 ```bash
 
@@ -33,24 +33,24 @@ curl --silent -X POST \
 
 curl --silent -X POST \
   --header 'Content-type: application/json' \
-  --data '{"email": "admin@email.com", "password": "PASSWORD", "token": "419488"}' \
+  --data '{"email": "admin@email.com", "password": "PASSWORD", "token": "075654"}' \
   --url 'http://localhost:5050/api/v1/auth/signin' | jq -r '.access_token'
 
-export ACCESS_TOKEN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZW1haWwuY29tIiwiaWF0IjoxNjQ5Mjk0MTQwLCJleHAiOjE2NDkyOTc3NDB9.EXOSTaeIkjUECd6kiT2qLisEqxjumdY1bqrqkQhcWrk'
+export ACCESS_TOKEN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZW1haWwuY29tIiwiaWF0IjoxNjUxMDA3NzgxLCJleHAiOjE2NTEwMTEzODF9.0HB8dTy__w3jJXkMpWlZsog9oOCsLTGg1yTmM8KAxRY'
 
 
 # get current user info
 curl --silent -X GET \
   --header 'Content-type: application/json' \
   --header "Authorization: Bearer ${ACCESS_TOKEN}" \
-  --url 'http://localhost:5050/api/v1/user/me'
+  --url 'http://localhost:5050/api/v1/user/me' | jq -r
 
 
 # reset 2FA for current user
 curl --silent -X PUT \
   --header 'Content-type: application/json' \
   --header "Authorization: Bearer ${ACCESS_TOKEN}" \
-  --url 'http://localhost:5050/api/v1/user/me/2fa/reset'
+  --url 'http://localhost:5050/api/v1/user/me/2fa/reset' | jq -r
 
 
 # docker-compose up -d --build user-ui
