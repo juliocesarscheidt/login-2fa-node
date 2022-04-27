@@ -1,8 +1,7 @@
 
 const InvalidUsernamePasswordException = require('../../domain/exception/invalidUsernamePasswordException');
 const UserNotFoundException = require('../../domain/exception/userNotFoundException');
-
-const { decodeJwtToken } = require('../common/encryption');
+const { decodeJwtToken } = require('../../shared/common/encryption');
 
 class BaseController {
   constructor() {
@@ -55,8 +54,7 @@ class BaseController {
   }
 
   static extractTokenFromHeader(req, res) {
-    const auth = req?.headers?.authorization;
-    const token = auth && auth.replace('Bearer ', '');
+    const token = req.headers?.authorization?.replace('Bearer ', '');
     if (!token) {
       return BaseController.ResponseUnauthorized(res, 'Unauthorized - Invalid token');
     }

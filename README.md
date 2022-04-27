@@ -31,13 +31,12 @@ curl --silent -X POST \
   --data '{"email": "admin@email.com", "password": "PASSWORD"}' \
   --url 'http://localhost:5050/api/v1/auth/signin' | jq -r '.qr_code'
 
-curl --silent -X POST \
+TOKEN='747484'
+export ACCESS_TOKEN=$(curl --silent -X POST \
   --header 'Content-type: application/json' \
-  --data '{"email": "admin@email.com", "password": "PASSWORD", "token": "075654"}' \
-  --url 'http://localhost:5050/api/v1/auth/signin' | jq -r '.access_token'
-
-export ACCESS_TOKEN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZW1haWwuY29tIiwiaWF0IjoxNjUxMDA3NzgxLCJleHAiOjE2NTEwMTEzODF9.0HB8dTy__w3jJXkMpWlZsog9oOCsLTGg1yTmM8KAxRY'
-
+  --data "{\"email\": \"admin@email.com\", \"password\": \"PASSWORD\", \"token\": \"${TOKEN}\"}" \
+  --url 'http://localhost:5050/api/v1/auth/signin' | jq -r '.access_token')
+echo "${ACCESS_TOKEN}"
 
 # get current user info
 curl --silent -X GET \
@@ -45,13 +44,11 @@ curl --silent -X GET \
   --header "Authorization: Bearer ${ACCESS_TOKEN}" \
   --url 'http://localhost:5050/api/v1/user/me' | jq -r
 
-
 # reset 2FA for current user
 curl --silent -X PUT \
   --header 'Content-type: application/json' \
   --header "Authorization: Bearer ${ACCESS_TOKEN}" \
-  --url 'http://localhost:5050/api/v1/user/me/2fa/reset' | jq -r
-
+  --url 'http://localhost:5050/api/v1/user/me/secret_reset' | jq -r
 
 # docker-compose up -d --build user-ui
 # docker-compose logs -f user-ui

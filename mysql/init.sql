@@ -5,5 +5,5 @@ create table `users` (
   username varchar(255),
   email varchar(255) UNIQUE KEY,
   password varchar(255),
-  2fa_secret varchar(255)
+  secret varchar(255)
 );

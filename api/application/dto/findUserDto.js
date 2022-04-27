@@ -1,4 +1,4 @@
-class User {
+class FindUserDto {
   id;
   username;
   email;
@@ -14,4 +14,4 @@ class User {
   }
 }
 
-module.exports = User;
+module.exports = FindUserDto;

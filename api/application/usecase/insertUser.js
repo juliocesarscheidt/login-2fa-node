@@ -6,8 +6,8 @@ class InsertUser {
   }
 
   async execute({ username, email, passwordEndrypted }) {
-    const user = await this.userRepository.insertOne(username, email, passwordEndrypted);
-    return user;
+    const result = await this.userRepository.insertOne(username, email, passwordEndrypted);
+    return result;
   }
 }
 

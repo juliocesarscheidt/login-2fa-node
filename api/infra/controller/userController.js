@@ -16,11 +16,15 @@ class UserController extends BaseController {
 
   async me(req, res) {
     const tokenDecoded = UserController.extractTokenFromHeader(req, req);
-    const user = { id: tokenDecoded.id, username: tokenDecoded.username, email: tokenDecoded.email };
-    return UserController.ResponseOk(res, { user });
+    try {
+      const result = await this.userService.findUserById(tokenDecoded.id);
+      return UserController.ResponseOk(res, result);
+    } catch (err) {
+      return UserController.HandleError(res, err);
+    }
   }
 
-  async me2faReset(req, res) {
+  async secretReset(req, res) {
     const tokenDecoded = UserController.extractTokenFromHeader(req, req);
     try {
       await this.userService.unsetUserSecret(tokenDecoded.id);
@@ -35,5 +39,5 @@ class UserController extends BaseController {
 module.exports = (router) => {
   const userController = new UserController();
   router.get('/user/me', [httpLogger], async (req, res) => userController.me(req, res));
-  router.put('/user/me/2fa/reset', [httpLogger], async (req, res) => userController.me2faReset(req, res));
+  router.put('/user/me/secret_reset', [httpLogger], async (req, res) => userController.secretReset(req, res));
 };

@@ -1,10 +1,15 @@
 const FindUser = require('../query/findUser');
 const UpdateUserSecret = require('../usecase/updateUserSecret');
 const InsertUser = require('../usecase/insertUser');
+const CreateUserDto = require('../dto/createUserDto');
+const UserQrCodeDto = require('../dto/userQrCodeDto');
+const UserTokenDto = require('../dto/userTokenDto');
+const FindUserDto = require('../dto/findUserDto');
 
 const InvalidUsernamePasswordException = require('../../domain/exception/invalidUsernamePasswordException');
+const UserNotFoundException = require('../../domain/exception/userNotFoundException');
 
-const { generate2faSecret } = require('../../infra/common/encryption');
+const { encryptPassword, comparePasswordSync, generateToken, generate2faSecret, verify2faSecret } = require('../../shared/common/encryption');
 
 class UserService {
   findUser;
@@ -15,14 +20,32 @@ class UserService {
     this.insertUser = new InsertUser(userRepository);
   }
 
+  async findUserById(id) {
+    const result = await this.findUser.execute({ id });
+    console.info('[INFO] findUserById result', result);
+    if (!result) throw new UserNotFoundException();
+    return new FindUserDto({ id: result.id, username: result.username, email: result.email });
+  }
+
   async findUserByEmail(email) {
     const result = await this.findUser.execute({ email });
-    console.info('[INFO] result', result);
-    if (!result) {
-      // bad exception
-      throw new InvalidUsernamePasswordException();
-    }
-    return result;
+    console.info('[INFO] findUserByEmail result', result);
+    if (!result) throw new InvalidUsernamePasswordException();
+    return new FindUserDto(result);
+  }
+
+  compareUserPassword(passwordSource, passwordTarget) {
+    return comparePasswordSync(passwordSource, passwordTarget);
+  }
+
+  verifyUserSecret(secret, token) {
+    return verify2faSecret(secret, token);
+  }
+
+  generateUserToken(id, username, email) {
+    const result = generateToken({ id, username, email });
+    console.info('[INFO] generateUserToken result', result);
+    return new UserTokenDto(result);
   }
 
   async unsetUserSecret(id) {
@@ -31,16 +54,17 @@ class UserService {
 
   async generateUserSecretQrCode(id, email) {
     const secretObject = generate2faSecret(email);
-    console.info('[INFO] secretObject', secretObject);
-    // save secret on database
+    console.info('[INFO] generateUserSecretQrCode secretObject', secretObject);
+    // persist secret on database
     await this.updateUserSecret.execute({ id, secret: secretObject.secret });
-    return secretObject.qr;
+    return new UserQrCodeDto(secretObject.qr);
   }
 
-  async createUser(username, email, passwordEndrypted) {
+  async createUser(username, email, password) {
+    const passwordEndrypted = encryptPassword(password);
     const result = await this.insertUser.execute({ username, email, passwordEndrypted });
-    console.info('[INFO] result', result);
-    return result.insertId;
+    console.info('[INFO] createUser result', result);
+    return new CreateUserDto(result);
   }
 }
 

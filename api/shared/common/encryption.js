@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const twofactor = require('node-2fa');
 
-const APP_NAME = 'Blackdevs API';
+const APP_NAME = process.env.APP_NAME || 'Blackdevs API';
 
 const encryptPassword = (password) => {
   const salt = bcrypt.genSaltSync();

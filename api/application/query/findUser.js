@@ -5,8 +5,13 @@ class FindUser {
     this.userRepository = userRepository;
   }
 
-  async execute({ email }) {
-    const user = await this.userRepository.findByEmail(email);
+  async execute({ id, email }) {
+    let user;
+    if (id) {
+      user = await this.userRepository.findById(id);
+    } else if (email) {
+      user = await this.userRepository.findByEmail(email);
+    }
     return user;
   }
 }
