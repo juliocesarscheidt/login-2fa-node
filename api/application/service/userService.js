@@ -6,6 +6,9 @@ const UserQrCodeDto = require('../dto/userQrCodeDto');
 const UserTokenDto = require('../dto/userTokenDto');
 const FindUserDto = require('../dto/findUserDto');
 
+const UserRepository = require('../../infra/repository/database/userRepository');
+// const UserRepository = require('../../infra/repository/memory/userRepository');
+
 const InvalidUsernamePasswordException = require('../../domain/exception/invalidUsernamePasswordException');
 const UserNotFoundException = require('../../domain/exception/userNotFoundException');
 
@@ -14,7 +17,8 @@ const { encryptPassword, comparePasswordSync, generateToken, generate2faSecret, 
 class UserService {
   findUser;
 
-  constructor(userRepository) {
+  constructor(databaseConnection) {
+    const userRepository = new UserRepository(databaseConnection);
     this.findUser = new FindUser(userRepository);
     this.updateUserSecret = new UpdateUserSecret(userRepository);
     this.insertUser = new InsertUser(userRepository);

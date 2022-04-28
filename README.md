@@ -31,7 +31,7 @@ curl --silent -X POST \
   --data '{"email": "admin@email.com", "password": "PASSWORD"}' \
   --url 'http://localhost:5050/api/v1/auth/signin' | jq -r '.qr_code'
 
-TOKEN='747484'
+TOKEN='285448'
 export ACCESS_TOKEN=$(curl --silent -X POST \
   --header 'Content-type: application/json' \
   --data "{\"email\": \"admin@email.com\", \"password\": \"PASSWORD\", \"token\": \"${TOKEN}\"}" \

@@ -1,17 +1,12 @@
 const UserService = require('../../application/service/userService');
-const UserRepository = require('../repository/userRepository');
-const DatabaseConnection = require('../adapter/databaseConnection');
-const { httpLogger } = require('../middleware/httpLogger');
 const BaseController = require('./baseController');
 
 class AuthController extends BaseController {
   userService;
 
-  constructor() {
+  constructor(databaseConnection) {
     super();
-    const databaseConnection = new DatabaseConnection();
-    const userRepository = new UserRepository(databaseConnection);
-    this.userService = new UserService(userRepository);
+    this.userService = new UserService(databaseConnection);
   }
 
   async signin(req, res) {
@@ -53,8 +48,4 @@ class AuthController extends BaseController {
   }
 }
 
-module.exports = (router) => {
-  const authController = new AuthController();
-  router.post('/auth/signin', [httpLogger], async (req, res) => authController.signin(req, res));
-  router.post('/auth/signup', [httpLogger], async (req, res) => authController.signup(req, res));
-};
+module.exports = AuthController;

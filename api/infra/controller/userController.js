@@ -1,21 +1,17 @@
 const UserService = require('../../application/service/userService');
-const UserRepository = require('../repository/userRepository');
-const DatabaseConnection = require('../adapter/databaseConnection');
-const { httpLogger } = require('../middleware/httpLogger');
 const BaseController = require('./baseController');
 
 class UserController extends BaseController {
   userService;
 
-  constructor() {
+  constructor(databaseConnection) {
     super();
-    const databaseConnection = new DatabaseConnection();
-    const userRepository = new UserRepository(databaseConnection);
-    this.userService = new UserService(userRepository);
+    this.userService = new UserService(databaseConnection);
   }
 
   async me(req, res) {
     const tokenDecoded = UserController.extractTokenFromHeader(req, req);
+    console.info('[INFO] tokenDecoded', tokenDecoded);
     try {
       const result = await this.userService.findUserById(tokenDecoded.id);
       return UserController.ResponseOk(res, result);
@@ -26,6 +22,7 @@ class UserController extends BaseController {
 
   async secretReset(req, res) {
     const tokenDecoded = UserController.extractTokenFromHeader(req, req);
+    console.info('[INFO] tokenDecoded', tokenDecoded);
     try {
       await this.userService.unsetUserSecret(tokenDecoded.id);
       return UserController.ResponseAccepted(res);
@@ -36,8 +33,4 @@ class UserController extends BaseController {
   }
 }
 
-module.exports = (router) => {
-  const userController = new UserController();
-  router.get('/user/me', [httpLogger], async (req, res) => userController.me(req, res));
-  router.put('/user/me/secret_reset', [httpLogger], async (req, res) => userController.secretReset(req, res));
-};
+module.exports = UserController;
